@@ -71,7 +71,11 @@
       var cnt = markerLatLng = new google.maps.LatLng(statLatLngArray[0][1], statLatLngArray[0][2]);
         map = new google.maps.Map(document.getElementById('map'), {
           center: cnt,
-          zoom: 15
+          zoom: 15,
+          mapTypeId: 'satellite',
+          mapTypeControl: false,
+          streetViewControl: false,
+          zoomControl: false
         });
 
       
@@ -94,7 +98,7 @@
         }
       }
     </script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=APIKEY&callback=initMap"
+    <script src="https://maps.googleapis.com/maps/api/js?key=APIKEY&callback=initMap&language=jp"
     async defer></script>
   </body>
 </html>
