@@ -5,7 +5,7 @@ GnssPosOnMap
 1. Push file select button and select csv file
 
 # CSV format
-## Eample
+## Example
 Status | Latitude |  Longitude
 --- | --- | ---
 1 | 33.5954692017 | 130.219074453
