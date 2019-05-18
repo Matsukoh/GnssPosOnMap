@@ -10,3 +10,6 @@ Status | Latitude |  Longitude
 --- | --- | ---
 1 | 33.5954692017 | 130.219074453
 0 | 33.59546908 | 130.21907427
+
+# Google Maps Platform
+You need an API key for Google Maps Platform. please rewrite "APIKEY" on main HTML script to your API key.
