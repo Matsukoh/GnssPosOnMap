@@ -20,6 +20,23 @@
   </head>
   <body>
     <input type="file" name="file" id="file">
+    <label>Fix flag : <input type="number" name="fix_flag" id="fix_flag" value="1"></label>
+    <label>Float flag : <input type="number" name="float_flag" id="float_flag" value="0"></label>
+    <label>Format :
+      <select name="format" id="selectFormat">
+        <option value="Fix" selected>Fix</option>
+        <option value="GPGGA">GPGGA</option>
+      </select>
+    </label>
+    <p>
+      <form name="parameter">
+        <div style="padding: 10px; margin-bottom: 10px; border: 5px double #333333; border-radius: 10px;">
+        <label>Status idx : <input type="number" name="status_idx" placeholder="status idx"></label><br>
+        <label>Latitude idx : <input type="number" name="lat_idx" placeholder="lat idx"></label><br>
+        <label>Longitude idx : <input type="number" name="lng_idx" placeholder="lng idx"></label><br>
+      </div>
+      </form>
+    </p>
     <div id="result"></div>
     <div id="map"></div>
     <script>
@@ -27,6 +44,12 @@
       var statLatLngArray;
       var file = document.getElementById('file');
       var result = document.getElementById('result');
+      // var status_idx = 6;
+      // var lat_idx = 2;
+      // var lng_idx = 4;
+      // var status_idx = ;
+      // var lat_idx = 2;
+      // var lng_idx = 4;
       
       // Check the browser can use File API or not
       if(window.File && window.FileReader && window.FileList && window.Blob) {
@@ -65,37 +88,76 @@
       var map;
       function initMap() {}
 
+      function convert_gpgga(data){
+        m = parseInt(data/100)
+        s = data - m*100
+        out = m + s/60
+        return out
+      }
+
       function updateMap() {
         var marker = [];
       console.log(statLatLngArray[0][1]);
-      var cnt = markerLatLng = new google.maps.LatLng(statLatLngArray[0][1], statLatLngArray[0][2]);
-        map = new google.maps.Map(document.getElementById('map'), {
-          center: cnt,
-          zoom: 15,
-          mapTypeId: 'satellite',
-          mapTypeControl: false,
-          streetViewControl: false,
-          zoomControl: false
-        });
+      console.log(document.getElementById('selectFormat').value);
+      if (document.getElementById('selectFormat').value == "GPGGA"){
+        var cnt = markerLatLng = new google.maps.LatLng(convert_gpgga(statLatLngArray[0][document.parameter.lat_idx.value]), convert_gpgga(statLatLngArray[0][document.parameter.lng_idx.value]));
+          map = new google.maps.Map(document.getElementById('map'), {
+            center: cnt,
+            zoom: 15,
+            mapTypeId: 'satellite',
+            mapTypeControl: false,
+            streetViewControl: false,
+            zoomControl: false
+          });
 
-      
-        for (var i = 0; i < statLatLngArray.length; i++) {
         
-          markerLatLng = new google.maps.LatLng(statLatLngArray[i][1], statLatLngArray[i][2]);
-          if (statLatLngArray[i][0] == 1) {
-            var icon_url = './markers/marker_blue.png';
-          } else if (statLatLngArray[i][0] == 0) {
-            var icon_url = './markers/marker_green.png';
-          } else {
-            var icon_url = './markers/marker_red.png';
+          for (var i = 0; i < statLatLngArray.length-1; i++) {
+          
+            markerLatLng = new google.maps.LatLng(convert_gpgga(statLatLngArray[i][document.parameter.lat_idx.value]), convert_gpgga(statLatLngArray[i][document.parameter.lng_idx.value]));
+            if (statLatLngArray[i][document.parameter.status_idx.value] == document.parameter.fix_flag.value) {
+              var icon_url = './markers/marker_blue.png';
+            } else if (statLatLngArray[i][document.parameter.status_idx.value] == document.parameter.float_flag.value) {
+              var icon_url = './markers/marker_green.png';
+            } else {
+              var icon_url = './markers/marker_red.png';
+            }
+        
+            marker[i] = new google.maps.Marker({
+            position: markerLatLng, 
+            icon: icon_url,
+            map: map 
+          });
           }
-      
-          marker[i] = new google.maps.Marker({
-          position: markerLatLng, 
-          icon: icon_url,
-          map: map 
-         });
-        }
+      } else if (document.getElementById('selectFormat').value == "Fix"){
+        var cnt = markerLatLng = new google.maps.LatLng(statLatLngArray[0][document.parameter.lat_idx.value], statLatLngArray[0][document.parameter.lng_idx.value]);
+          map = new google.maps.Map(document.getElementById('map'), {
+            center: cnt,
+            zoom: 15,
+            mapTypeId: 'satellite',
+            mapTypeControl: false,
+            streetViewControl: false,
+            zoomControl: false
+          });
+
+        
+          for (var i = 0; i < statLatLngArray.length-1; i++) {
+          
+            markerLatLng = new google.maps.LatLng(statLatLngArray[i][document.parameter.lat_idx.value], statLatLngArray[i][document.parameter.lng_idx.value]);
+            if (statLatLngArray[i][document.parameter.status_idx.value] == document.getElementById('fix_flag').value) {
+              var icon_url = './markers/marker_blue.png';
+            } else if (statLatLngArray[i][document.parameter.status_idx.value] ==  document.getElementById('float_flag').value) {
+              var icon_url = './markers/marker_green.png';
+            } else {
+              var icon_url = './markers/marker_red.png';
+            }
+        
+            marker[i] = new google.maps.Marker({
+            position: markerLatLng, 
+            icon: icon_url,
+            map: map 
+          });
+          }
+      }
       }
     </script>
     <script src="https://maps.googleapis.com/maps/api/js?key=APIKEY&callback=initMap&language=jp"
